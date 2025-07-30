@@ -1,4 +1,4 @@
-.tastelens-overlay {
+.personareads-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -10,7 +10,7 @@
     /* Ensures the pseudo-element stays within the box */
 }
 
-.tastelens-overlay::before {
+.personareads-overlay::before {
     content: '';
     position: absolute;
     top: 0px;

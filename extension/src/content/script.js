@@ -1,7 +1,7 @@
 // Create Animated Overlay
 function createOverlay() {
     const overlay = document.createElement("div");
-    overlay.className = "tastelens-overlay";
+    overlay.className = "personareads-overlay";
     document.body.appendChild(overlay);
 }
 
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
             sendResponse(getNormalizedUrl());
             break;
         case "stop_animation":
-            const overlaysByClass = document.getElementsByClassName("tastelens-overlay");
+            const overlaysByClass = document.getElementsByClassName("personareads-overlay");
             if (overlaysByClass.length > 0) document.body.removeChild(overlaysByClass[0]);
             break;
     }
