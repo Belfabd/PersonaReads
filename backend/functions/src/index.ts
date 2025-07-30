@@ -7,14 +7,14 @@ import {applicationDefault, initializeApp} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import {setGlobalOptions} from "firebase-functions";
 import {defineSecret} from "firebase-functions/params";
-import {Item, ItemSchema} from "./types";
-import {addItem, getItem} from "./utilities";
+import {BookAnalysisSchema, BookAnalysis} from "./types";
+import {addBook, getBookAnalysis} from "./utilities/database";
+import {getBook, getRecommendations} from "./utilities/api";
 
 // ----------------------------------------- Initializations
-const debug = false;
+const debug = true; // TODO: turn to false
 const app = initializeApp({
-    credential: debug ?
-        credential.cert("./firebase-creds.json") : applicationDefault(),
+    credential: debug ? credential.cert("./firebase-creds.json") : applicationDefault(),
 });
 const firestore = getFirestore(app);
 setGlobalOptions({maxInstances: 10});
@@ -30,13 +30,33 @@ const ai = genkit({
 logger.setLogLevel(debug ? "debug" : "info");
 
 // ----------------------------------------- Prompts
+const enhanceResultsPrompt = ai.definePrompt(
+    {
+        name: "enhanceResultsPrompt",
+        input: {
+            schema: z.object({
+                name: z.string(),
+                tags: z.array(z.string()),
+                description: z.string(),
+            })
+        },
+        output: {
+            format: "json",
+            schema: z.object({points: z.array(z.string())}),
+        },
+    },
+    `Based on the name, description and tags of the book. Create a profile of the reader of such book is most interested in as a form of list of points.
+    - Name: {{name}}
+    - Description: {{description}}
+    - Tags: {{tags}}`
+);
 
 // ----------------------------------------- Flows
-const analyzeItemFlow = ai.defineFlow(
+const analyzeBookFlow = ai.defineFlow(
     {
-        name: "analyze-item-flow",
-        inputSchema: z.object({url: z.string(), title: z.string()}),
-        outputSchema: ItemSchema.or(z.object({error: z.string()})),
+        name: "analyze-book-flow",
+        inputSchema: z.object({name: z.string()}),
+        outputSchema: BookAnalysisSchema.or(z.object({error: z.string()})),
     },
     async (input, {context}) => {
         // Check if the user is not authenticated
@@ -45,31 +65,46 @@ const analyzeItemFlow = ai.defineFlow(
         }
 
         try {
-            // Check if the Article already exists
-            const item: Item | undefined = await getItem(firestore, input.url);
-            if (item) return item; // already exists, return it
-            else {
-                // ------------------------ TODO: Fetch some content
-                // ------------------------ TODO: Extract most important name
-                // ------------------------ TODO: Use API
-                // ------------------------ TODO: Enhance results
-                // ------------------------ TODO: More enhancements with WikiPedia
+            // Get Book Details
+            const bookResult = await getBook(qlooKey.value(), input.name);
+            if (bookResult) {
+                // Check if the Article already exists
+                const analysis: BookAnalysis | undefined = await getBookAnalysis(firestore, bookResult.entity_id);
+                if (analysis) return analysis; // already exists, return it
+                else {
+                    // ------------------------ Get Insights
+                    const books = await getRecommendations(qlooKey.value(), bookResult.entity_id);
 
-                // ------------------------ Save Results
-                await addItem(firestore, {url: "", created_at: ""}); //TODO: use proper
+                    // ------------------------ Enhance results
+                    const response = (await enhanceResultsPrompt({
+                        name: input.name,
+                        tags: bookResult.book.tags,
+                        description: bookResult.book.description
+                    }));
+                    const points = response.output!.points;
 
-                // ------------------------ Return Results
-                return {url: "", created_at: ""}; // TODO: return proper
-            }
+                    // ------------------------ Save Results
+                    const analysis : BookAnalysis = {
+                        book: bookResult.book,
+                        profile: points,
+                        recommendations: books ?? [],
+                        created_at: (new Date()).toDateString()
+                    }
+                    await addBook(firestore, bookResult.entity_id, analysis);
+
+                    // ------------------------ Return Results
+                    return analysis;
+                }
+            } else return {error: "Book not found. Try a different title."};
         } catch (e) {
             // not saved, it's ok for now
-            return {error: "Access denied. Please re-login and try again"}; //TODO: new error message
+            return {error: "Oops! Something went wrong. Try again shortly."};
         }
     }
 )
 
 // ----------------------------------------- Starting...
-export const analyzeItem = onCallGenkit({
+export const analyzeBook = onCallGenkit({
     enforceAppCheck: false,
     secrets: [genaiKey, qlooKey],
-}, analyzeItemFlow);
+}, analyzeBookFlow);
