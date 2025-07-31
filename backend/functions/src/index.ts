@@ -7,9 +7,10 @@ import {applicationDefault, initializeApp} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import {setGlobalOptions} from "firebase-functions";
 import {defineSecret} from "firebase-functions/params";
-import {BookAnalysisSchema, BookAnalysis} from "./types";
-import {addBook, getBookAnalysis} from "./utilities/database";
+import {BookAnalysisSchema, User} from "./types";
 import {getBook, getRecommendations} from "./utilities/api";
+import {getUserDetails, updateUser} from "./utilities/database";
+import {enhanceResultsPrompt, getPersonasPrompt} from "./utilities/prompts";
 
 // ----------------------------------------- Initializations
 const debug = true; // TODO: turn to false
@@ -29,33 +30,11 @@ const ai = genkit({
 });
 logger.setLogLevel(debug ? "debug" : "info");
 
-// ----------------------------------------- Prompts
-const enhanceResultsPrompt = ai.definePrompt(
-    {
-        name: "enhanceResultsPrompt",
-        input: {
-            schema: z.object({
-                name: z.string(),
-                tags: z.array(z.string()),
-                description: z.string(),
-            })
-        },
-        output: {
-            format: "json",
-            schema: z.object({points: z.array(z.string())}),
-        },
-    },
-    `Based on the name, description and tags of the book. Create a profile of the reader of such book is most interested in as a form of list of points.
-    - Name: {{name}}
-    - Description: {{description}}
-    - Tags: {{tags}}`
-);
-
 // ----------------------------------------- Flows
 const analyzeBookFlow = ai.defineFlow(
     {
         name: "analyze-book-flow",
-        inputSchema: z.object({name: z.string()}),
+        inputSchema: z.object({name: z.string(), userId: z.string()}),
         outputSchema: BookAnalysisSchema.or(z.object({error: z.string()})),
     },
     async (input, {context}) => {
@@ -68,33 +47,48 @@ const analyzeBookFlow = ai.defineFlow(
             // Get Book Details
             const bookResult = await getBook(qlooKey.value(), input.name);
             if (bookResult) {
-                // Check if the Article already exists
-                const analysis: BookAnalysis | undefined = await getBookAnalysis(firestore, bookResult.entity_id);
-                if (analysis) return analysis; // already exists, return it
-                else {
-                    // ------------------------ Get Insights
-                    const books = await getRecommendations(qlooKey.value(), bookResult.entity_id);
+                // ------------------------ Get Recommendations & Enhance results
+                const books = await getRecommendations(qlooKey.value(), bookResult.entity_id) ?? [];
+                if (books.length == 0) return {error: "No similar books found. Try a different title."}
 
-                    // ------------------------ Enhance results
-                    const response = (await enhanceResultsPrompt({
+                // Continue, there's recommendations
+                const response = (await enhanceResultsPrompt(ai)({
+                    book: {
                         name: input.name,
-                        tags: bookResult.book.tags,
                         description: bookResult.book.description
-                    }));
-                    const points = response.output!.points;
+                    },
+                    recommendations: books.map((book) => ({name: book.name, description: book.description}))
+                }));
+                const relations = response.output!.relations;
 
-                    // ------------------------ Save Results
-                    const analysis : BookAnalysis = {
-                        book: bookResult.book,
-                        profile: points,
-                        recommendations: books ?? [],
-                        created_at: (new Date()).toDateString()
-                    }
-                    await addBook(firestore, bookResult.entity_id, analysis);
+                // ------------------------ Update Personas
+                const user: User | undefined = (await getUserDetails(firestore, input.userId));
+                const newPersona = (await getPersonasPrompt(ai)({
+                    book: {
+                        name: input.name,
+                        description: bookResult.book.description,
+                        tags: bookResult.book.tags,
+                    },
+                    personas: user?.personas.sort((a, b) => a.analyzedOn - b.analyzedOn).map((p) => ({
+                        persona: p.id,
+                        date: (new Date(p.analyzedOn)).toLocaleString()
+                    })) ?? [],
+                })).output!.result;
 
-                    // ------------------------ Return Results
-                    return analysis;
-                }
+                const persona = {id: newPersona.persona, analyzedOn: (new Date()).getTime()}
+                await updateUser(firestore, input.userId, {
+                    progression: newPersona.progression,
+                    personas: user ? user.personas.concat([persona]) : [persona]
+                })
+
+                // ------------------------ Return Results
+                return {
+                    book: bookResult.book,
+                    recommendations: books.map((book) => ({
+                        ...book,
+                        relation: relations.find((relation) => relation.name == book.name)!!.relation
+                    }))
+                };
             } else return {error: "Book not found. Try a different title."};
         } catch (e) {
             // not saved, it's ok for now

@@ -35,7 +35,8 @@ export async function getRecommendations(apiKey: string, entityId: string): Prom
         fetch(url, options)
             .then(res => res.json())
             .then((json: InsightResponse) => {
-                resolve(json.results.entities.map(entity => ({
+                if (!json.success) resolve(undefined)
+                else resolve(json.results.entities.map(entity => ({
                     name: entity.name,
                     imageUrl: entity.properties.image.url,
                     description: entity.properties.description,
