@@ -2,17 +2,16 @@ import {Book, InsightResponse, SearchResponse} from "../types";
 
 export async function getBook(apiKey: string, name: string): Promise<{ book: Book, entity_id: string } | undefined> {
   return new Promise((resolve) => {
-    const url = `https://hackathon.api.qloo.com/search?query=${name}&page=1&take=20`;
+    const url = `https://hackathon.api.qloo.com/search?query=${name}&page=1&take=2`;
     const options = {method: "GET", headers: {"accept": "application/json", "X-Api-Key": apiKey}};
     fetch(url, options)
       .then((res) => res.json())
       .then((response: SearchResponse) => {
-        const topResult = response.results.filter((res) => res.types.includes("urn:entity:book")).reduce((max, item) =>
-          item.popularity > max.popularity ? item : max
-        );
+        const topResults = response.results.filter((res) => res.types.includes("urn:entity:book"));
 
-        if (!topResult) resolve(undefined);
+        if (topResults.length === 0) resolve(undefined);
         else {
+          const topResult = topResults[0];
           resolve({
             entity_id: topResult.entity_id,
             book: {

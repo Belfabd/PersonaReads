@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
                 // query current tab from title
                 chrome.tabs.query({active: true, currentWindow: true}, async function (queryTabs) {
                     // sometimes activeTabId is -1 initially
-                    await sendState("tab", tabs.get(queryTabs[0].id));
+                    await sendState("tab", tabs.get(activeTabId === -1 ? queryTabs[0].id : activeTabId));
                 });
                 break;
             case "analyze":

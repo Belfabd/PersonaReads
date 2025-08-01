@@ -64,7 +64,8 @@ export class HomeComponent implements OnInit {
                     this.name = tabState?.name;
                     this.scanningLoading = tabState?.isLoading ?? false;
                     if (tabState?.analysis) {
-                        const analysis = tabState?.analysis
+                        this.scanningLoading = false;
+                        const analysis = tabState?.analysis;
                         if (analysis.error != null) this._snackBar.open(analysis.error);
                         else this.bookAnalysis = analysis.bookAnalysis
                     } else this.bookAnalysis = null;
