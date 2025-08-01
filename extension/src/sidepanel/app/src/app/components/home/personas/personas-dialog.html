@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Personas</h2>
+<mat-dialog-content class="dialog-container">
+    @if (isLoading) {
+        <mat-spinner [diameter]="128" [color]="'#111413'"></mat-spinner>
+    } @else if (user == null) {
+        <p>Analyze at least one book to get your Personas!</p>
+    } @else {
+        <div class="carousel-container">
+            <button mat-fab color="primary" class="nav-button prev-button" (click)="previousSlide()"
+                    [disabled]="currentSlideIndex === 0">
+                <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <div class="slide-content">
+                <div class="text-slide" *ngIf="user.progression && currentSlideIndex === 0">
+                    <p class="slide-text">{{ user.progression }}</p>
+                </div>
+
+                <div class="content-slide" *ngIf="(!user.progression && currentSlideIndex === 0) || currentSlideIndex !== 0">
+                    <img [ngSrc]="getSlide().image" [alt]="getSlide().name" class="slide-image" width="200"
+                         height="300">
+                    <h3 class="slide-title">{{ getSlide().name }}</h3>
+                    <p class="slide-description">{{ getSlide().description }}</p>
+                </div>
+            </div>
+
+            <button mat-fab color="primary" class="nav-button next-button" (click)="nextSlide()"
+                    [disabled]="currentSlideIndex === user.personas.length - (user.progression ? 0 : 1)">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+        </div>
+        <div class="slide-indicators">
+            <span *ngFor="let slide of user.personas; let i = index" class="indicator"
+                  [class.active]="i === currentSlideIndex"></span>
+        </div>
+    }
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-flat-button (click)="closeDialog()">Got It!</button>
+</mat-dialog-actions>

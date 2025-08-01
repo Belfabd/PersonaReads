@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>{{book.name}}</h2>
+<mat-dialog-content class="dialog-container">
+    <div class="book-details-content">
+        <div class="book-image-container">
+            <img [ngSrc]="book.imageUrl" [alt]="book.name" class="book-image" width="200" height="300">
+        </div>
+        <div class="book-info">
+            <p class="book-description">{{ book.description }}</p>
+            <div class="book-tags" *ngIf="book.tags">
+                <mat-chip-set>
+                    <mat-chip *ngFor="let tag of book.tags">{{ tag }}</mat-chip>
+                </mat-chip-set>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-flat-button (click)="closeDialog()">Got It!</button>
+</mat-dialog-actions>
