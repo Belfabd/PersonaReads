@@ -1,0 +1,270 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+mat-toolbar {
+  background-color: transparent;
+  margin: 8px 0;
+  padding: 0 16px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.topbar-logo {
+  font-size: 32px;
+  color: var(--mat-sys-secondary);
+  font-family: "Goudy Bookletter 1911", sans-serif;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.name {
+  width: 100%;
+  display: block;
+  justify-self: center;
+  word-break: break-word;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 2em;
+  line-height: normal;
+}
+
+.loading {
+  color: var(--mat-sys-secondary);
+  opacity: var(--opacity);
+  animation: loadingText 0.5s infinite alternate;
+}
+
+.loading-span {
+  opacity: var(--opacity);
+  animation: loadingText 0.5s infinite alternate;
+}
+
+.scan {
+  display: inline-flex;
+  align-self: center;
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.scan span {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+@property --opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+@keyframes loadingText {
+  0% {
+    --opacity: 1
+  }
+
+  100% {
+    --opacity: 0.5
+  }
+}
+
+.book-details-section {
+  display: flex;
+  justify-content: center;
+}
+
+.book-details-card {
+  width: 100%;
+  max-width: 800px;
+  padding: 32px;
+}
+
+.book-details-content {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.book-image-container {
+  flex-shrink: 0;
+}
+
+.book-image {
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.book-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.book-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: normal;
+}
+
+.book-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.book-tags {
+  margin-top: 8px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin: 24px 0 16px;
+}
+
+.recommended-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.nav-button {
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button[disabled] {
+  opacity: 0.4;
+}
+
+.recommended-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  flex: 1;
+  max-width: 400px;
+  margin: 16px 32px;
+}
+
+.recommended-image {
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.recommended-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.recommended-description {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
+.recommended-button {
+  margin: 0 8px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 16px;
+    gap: 32px;
+  }
+
+  .book-details-card {
+    padding: 24px;
+  }
+
+  .book-details-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .book-image {
+    width: 200px;
+    height: 280px;
+  }
+
+  .recommended-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .nav-button {
+    position: static;
+  }
+
+  .prev-button {
+    order: -1;
+  }
+
+  .next-button {
+    order: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-image {
+    width: 160px;
+    height: 220px;
+  }
+
+  .recommended-image {
+    width: 120px;
+    height: 160px;
+  }
+
+  .book-title {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+}

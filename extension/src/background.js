@@ -1,10 +1,10 @@
 //------------------------------- Declarations
 import {
-    getUrl,
+    getBookName,
     sendState,
     startAnimations,
     stopAnimations,
-    analyzeItem
+    analyzeBook
 } from "./utilities";
 
 let creating; // A global promise to avoid concurrency issues
@@ -29,20 +29,14 @@ chrome.runtime.onMessage.addListener(async (message) => {
 
                 // start animations
                 await startAnimations(itemTabId);
-                await sendState("loading", {isLoading: true});
+                tabs.set(activeTabId, {isLoading: true, ...tabs.get(activeTabId)});
+                await sendState("tab", tabs.get(activeTabId));
 
                 // analyzed item
-                const response = await analyzeItem(message.url);
+                const response = await analyzeBook(message.name);
                 await stopAnimations(itemTabId);
-                await sendState("loading", {isLoading: false});
-                await sendState("analysis", response);
-                chrome.notifications.create({
-                    type: "basic",
-                    iconUrl: "./images/icon128.png",
-                    title: "Analyzation Completed",
-                    message: `<ADD PROPER MESSAGE FOR NOTIFICATIONS>`,
-                    priority: 1
-                });
+                tabs.set(activeTabId, {analysis: response, isLoading: false, ...tabs.get(activeTabId)});
+                await sendState("tab", tabs.get(activeTabId));
                 break;
         }
     }
@@ -50,17 +44,12 @@ chrome.runtime.onMessage.addListener(async (message) => {
 
 //------------------------------- Tab Handling
 chrome.webNavigation.onCompleted.addListener(async (details) => {
-    // Send url to the sidepanel
+    // Send name to the sidepanel
     if (details.frameId === 0) {
         // query current tab from title
         chrome.tabs.query({active: true, currentWindow: true}, async function (queryTabs) {
-            // TODO: Handle all url cases
             activeTabId = queryTabs[0].id;
-            tabs.set(activeTabId, {
-                url: await getUrl(activeTabId),
-                title: queryTabs[0].title,
-                isSystem: details.url.startsWith("chrome://")
-            });
+            tabs.set(activeTabId, {name: await getBookName(activeTabId)});
             await sendState("tab", tabs.get(activeTabId));
         });
     }
@@ -70,7 +59,7 @@ chrome.tabs.onRemoved.addListener((tabId, _removeInfo) => {
 });
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
     activeTabId = activeInfo.tabId;// update activeTabId
-    // send article/url to sidepanel
+    // send name to sidepanel
     await sendState("tab", tabs.get(activeTabId));
 });
 

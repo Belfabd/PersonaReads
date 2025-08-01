@@ -30,7 +30,7 @@ module.exports = {
                 {from: './src/manifest.json'},
                 {from: './src/content/', to: './content/'},
                 {from: './src/images/', to: './images/'},
-                {from: './src/sidepanel/prod/browser/', to: './sidepanel/'},
+                {from: './src/sidepanel/dist/browser/', to: './sidepanel/'},
             ],
         })
         ,

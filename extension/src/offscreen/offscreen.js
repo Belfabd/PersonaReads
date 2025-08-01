@@ -6,8 +6,10 @@ import {
 } from 'firebase/auth/web-extension';
 import {
     getFirestore,
+    getDoc,
+    doc,
 } from 'firebase/firestore';
-import {getFunctions, httpsCallable} from 'firebase/functions';
+import {getFunctions, httpsCallable, connectFunctionsEmulator} from 'firebase/functions';
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -18,11 +20,9 @@ auth.onAuthStateChanged(async (user) => {
     await chrome.runtime.sendMessage({target: "background", action: "userIn", isLoggedIn: user != null});
 });
 
-
 // Listen for messages from sidepanel & background service worker
 chrome.runtime.onMessage.addListener(handleChromeMessages);
 
-// TODO: Check firestore before calling functions
 function handleChromeMessages(message, _sender, sendResponse) {
     if (message.target === "offscreen") switch (message.action) {
         //--------------------------- Authentication
@@ -54,15 +54,19 @@ function handleChromeMessages(message, _sender, sendResponse) {
             break;
 
         //--------------------------- Analyzer
+        case "get_user_details":
+            getDoc(doc(db, "users", auth.currentUser.uid)).then(async querySnapshot => {
+                sendResponse(querySnapshot.exists() ? {user: querySnapshot.data()} : undefined);
+            });
+            return true;
         case "analyze":
             (async () => {
-                const analyzeItem = httpsCallable(functions, 'analyzeItem');
-                analyzeItem({url: message.url})
-                    .then(res => {
-                        const result = res.data;
-                        if (result.error) sendResponse({error: result.error, item: null});
-                        else sendResponse({error: null, item: result});
-                    });
+                const analyzeBook = httpsCallable(functions, 'analyzeBook');
+                analyzeBook({name: message.name, userId: auth.currentUser.uid}).then(res => {
+                    const result = res.data;
+                    if (result.error) sendResponse({error: result.error, bookAnalysis: null});
+                    else sendResponse({error: null, bookAnalysis: result});
+                });
             })();
             return true;
     }

@@ -1,1 +1,77 @@
-<p>home works!</p>
+<div class="container">
+    <mat-toolbar>
+        <span class="topbar-logo">PersonaReads</span>
+        <span class="spacer"></span>
+        <div class="navigation-buttons">
+            <button mat-icon-button [disabled]="scanningLoading" (click)="openPersona()">
+                <mat-icon>person</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="scanningLoading" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <div class="content">
+        @if (bookAnalysis == null) {
+            <span class="name mat-display-large"
+                  [ngClass]="name == null ? 'loading-span' : scanningLoading ? 'loading' : ''">{{
+                    name == null ? "Not a Book!" : name
+                }}</span>
+            <!-- Scan Button -->
+            <button class="scan" mat-flat-button [disabled]="scanningLoading || name === undefined"
+                    (click)="scanItem()">
+                <mat-spinner [diameter]="24" [color]="'#111413'" *ngIf="scanningLoading"></mat-spinner>
+                <span class="mat-label-large" *ngIf="!scanningLoading">I Like this Book!</span>
+            </button>
+        } @else {
+            <!-- Book Details Section -->
+            <section class="book-details-section">
+                <mat-card class="book-details-card">
+                    <div class="book-details-content">
+                        <div class="book-image-container">
+                            <img [ngSrc]="bookAnalysis!.book.imageUrl" [alt]="bookAnalysis!.book.name"
+                                 class="book-image" width="200" height="300">
+                        </div>
+                        <div class="book-info">
+                            <h1 class="book-title">{{ bookAnalysis!.book.name }}</h1>
+                            <p class="book-description">{{ bookAnalysis!.book.description }}</p>
+                            <div class="book-tags" *ngIf="bookAnalysis!.book.tags">
+                                <mat-chip-set>
+                                    <mat-chip *ngFor="let tag of bookAnalysis!.book.tags">
+                                        {{ tag }}
+                                    </mat-chip>
+                                </mat-chip-set>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card>
+            </section>
+
+            <!-- Recommended Books Section -->
+            <section class="recommended-section">
+                <h2 class="section-title">Recommended Books</h2>
+                <div class="recommended-container">
+                    <button mat-fab color="primary" class="nav-button prev-button" (click)="previousBook()"
+                            [disabled]="currentRecommendedIndex === 0">
+                        <mat-icon>chevron_left</mat-icon>
+                    </button>
+
+                    <div class="recommended-content">
+                        <img [ngSrc]="getCurrentRecommendedBook().imageUrl" [alt]="getCurrentRecommendedBook().name"
+                             class="recommended-image" width="200" height="300">
+                        <h3 class="recommended-title">{{ getCurrentRecommendedBook().name }}</h3>
+                        <p class="recommended-description">{{ getCurrentRecommendedBook().relation }}</p>
+                        <button mat-flat-button color="primary" class="recommended-button" (click)="showBookDetails()">
+                            <span>View Details</span>
+                        </button>
+                    </div>
+
+                    <button mat-fab color="primary" class="nav-button next-button"
+                            (click)="nextBook()" [disabled]="currentRecommendedIndex === bookAnalysis!.recommendations.length - 1">
+                        <mat-icon>chevron_right</mat-icon>
+                    </button>
+                </div>
+            </section>
+        }
+    </div>
+</div>
