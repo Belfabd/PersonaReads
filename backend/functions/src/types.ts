@@ -33,21 +33,21 @@ export type InsightResponse = {
 
 // ---------------------------------------- Data
 export const UserSchema = z.object({
-    personas: z.array(z.object({id: z.string(), analyzedOn: z.number()})),
-    progression: z.string().optional(),
+  personas: z.array(z.object({id: z.string(), analyzedOn: z.number()})),
+  progression: z.string().optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
 export const BookSchema = z.object({
-    name: z.string(),
-    imageUrl: z.string(),
-    description: z.string(),
-    tags: z.array(z.string()),
-    relation: z.string().optional()
+  name: z.string(),
+  imageUrl: z.string(),
+  description: z.string(),
+  tags: z.array(z.string()),
+  relation: z.string().optional(),
 });
 export type Book = z.infer<typeof BookSchema>;
 
 export const BookAnalysisSchema = z.object({
-    book: BookSchema,
-    recommendations: z.array(BookSchema)
+  book: BookSchema,
+  recommendations: z.array(BookSchema),
 });

@@ -2,35 +2,35 @@ import {Genkit, z} from "genkit";
 import {gemini20Flash} from "@genkit-ai/googleai";
 
 export function enhanceResultsPrompt(ai: Genkit) {
-    return ai.definePrompt(
-        {
-            name: "enhanceResultsPrompt",
-            model: gemini20Flash,
-            input: {
-                schema: z.object({
-                    book: z.object({
-                        name: z.string(),
-                        description: z.string(),
-                    }),
-                    recommendations: z.array(
-                        z.object({
-                            name: z.string(),
-                            description: z.string(),
-                        })
-                    ),
-                })
-            },
-            output: {
-                format: "json",
-                schema: z.object({
-                    relations: z.array(z.object({
-                        name: z.string(),
-                        relation: z.string(),
-                    }))
-                }),
-            },
-        },
-        `You are a literary expert helping a reader understand why certain books are recommended based on their favorite book.
+  return ai.definePrompt(
+    {
+      name: "enhanceResultsPrompt",
+      model: gemini20Flash,
+      input: {
+        schema: z.object({
+          book: z.object({
+            name: z.string(),
+            description: z.string(),
+          }),
+          recommendations: z.array(
+            z.object({
+              name: z.string(),
+              description: z.string(),
+            })
+          ),
+        }),
+      },
+      output: {
+        format: "json",
+        schema: z.object({
+          relations: z.array(z.object({
+            name: z.string(),
+            relation: z.string(),
+          })),
+        }),
+      },
+    },
+    `You are a literary expert helping a reader understand why certain books are recommended based on their favorite book.
 
 Given:
 - One book I like (with its name and description)
@@ -49,40 +49,40 @@ Avoid repeating the full descriptions. Be specific and insightful, not generic.
 {{#each recommendations}}
 **{{name}}**: {{description}}
 {{/each}}`
-    )
+  );
 }
 
 export function getPersonasPrompt(ai: Genkit) {
-    return ai.definePrompt(
-        {
-            name: "getPersonasPrompt",
-            model: gemini20Flash,
-            input: {
-                schema: z.object({
-                    book: z.object({
-                        name: z.string(),
-                        description: z.string(),
-                        tags: z.array(z.string())
-                    }),
-                    personas: z.array(
-                        z.object({
-                            persona: z.string(),
-                            date: z.string(),
-                        })
-                    ),
-                })
-            },
-            output: {
-                format: "json",
-                schema: z.object({
-                    result: z.object({
-                        progression: z.string().describe("the short progression summary"),
-                        persona: z.string().describe("the persona id"),
-                    })
-                }),
-            },
-        },
-        `You are a literary analyst that helps categorize readers into distinct "reading personas" based on their book preferences. 
+  return ai.definePrompt(
+    {
+      name: "getPersonasPrompt",
+      model: gemini20Flash,
+      input: {
+        schema: z.object({
+          book: z.object({
+            name: z.string(),
+            description: z.string(),
+            tags: z.array(z.string()),
+          }),
+          personas: z.array(
+            z.object({
+              persona: z.string(),
+              date: z.string(),
+            })
+          ),
+        }),
+      },
+      output: {
+        format: "json",
+        schema: z.object({
+          result: z.object({
+            progression: z.string().describe("the short progression summary"),
+            persona: z.string().describe("the persona id"),
+          }),
+        }),
+      },
+    },
+    `You are a literary analyst that helps categorize readers into distinct "reading personas" based on their book preferences. 
 
 Below is a predefined list of all personas. Use these as the only valid options when analyzing my persona.
 
@@ -208,6 +208,7 @@ Here is the book I just scanned:
 ## Your Tasks
 
 1. **Determine my current persona** by matching the new book's themes, tone, and tags to one of the predefined personas above and return the persona id.  
-2. **Write a short progression summary** in 2 sentences showing how my persona has evolved over time based on previous personas and this new one. Highlight any clear shifts in genre, tone, or reading style. If no persona were found, consider only the new book.
+2. **Write a short progression summary** in 2 sentences showing how my persona has evolved over time based on previous personas and this new one.
+Highlight any clear shifts in genre, tone, or reading style. If no persona were found, consider only the new book.
 `);
 }
