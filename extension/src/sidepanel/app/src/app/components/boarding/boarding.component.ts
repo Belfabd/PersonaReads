@@ -1,11 +1,26 @@
-import { Component } from '@angular/core';
+///<reference types="chrome"/>
+import {Component, OnInit} from '@angular/core';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-boarding',
   imports: [],
   templateUrl: './boarding.component.html',
-  styleUrl: './boarding.component.css'
+  styleUrl: './boarding.component.scss'
 })
-export class BoardingComponent {
+export class BoardingComponent implements OnInit {
+
+  constructor(private router: Router) {
+  }
+
+  async ngOnInit(): Promise<void> {
+    const saved = await chrome.storage.local.get(["boardingCompleted"]);
+    if (saved["boardingCompleted"] === true) await this.router.navigate(['/home']);
+    else setTimeout(() => {
+      chrome.storage.local.set({boardingCompleted: true}, () => {
+        this.router.navigate(['/home']);
+      });
+    }, 2000);
+  }
 
 }

@@ -22,7 +22,7 @@ export const routes: Routes = [
         component: RegisterComponent,
     },
     {
-        path: 'dashboard',
+        path: 'home',
         title: 'Home',
         component: HomeComponent,
         canActivate: [AuthGuard]
