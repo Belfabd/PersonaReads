@@ -7,16 +7,18 @@ export async function getBook(apiKey: string, name: string): Promise<{ book: Boo
         fetch(url, options)
             .then(res => res.json())
             .then((response: SearchResponse) => {
-                const topResult = response.results.reduce((max, item) =>
+                const topResult = response.results.filter((res) => res.types.includes("urn:entity:book")).reduce((max, item) =>
                     item.popularity > max.popularity ? item : max
                 );
-                resolve({
+
+                if (!topResult) resolve(undefined)
+                else resolve({
                     entity_id: topResult.entity_id,
                     book: {
                         name: topResult.name,
                         imageUrl: topResult.properties.image.url,
                         description: topResult.properties.description,
-                        tags: topResult.properties.tags.map(tag => tag.name)
+                        tags: topResult.tags?.map(tag => tag.name) ?? []
                     }
                 });
             })
@@ -36,12 +38,14 @@ export async function getRecommendations(apiKey: string, entityId: string): Prom
             .then(res => res.json())
             .then((json: InsightResponse) => {
                 if (!json.success) resolve(undefined)
-                else resolve(json.results.entities.map(entity => ({
-                    name: entity.name,
-                    imageUrl: entity.properties.image.url,
-                    description: entity.properties.description,
-                    tags: entity.properties.tags.map(tag => tag.name)
-                })));
+                else {
+                    resolve(json.results.entities.map(entity => ({
+                        name: entity.name,
+                        imageUrl: entity.properties.image.url,
+                        description: entity.properties.description,
+                        tags: entity.tags?.map(tag => tag.name) ?? []
+                    })));
+                }
             })
             .catch(err => {
                 console.error(err);

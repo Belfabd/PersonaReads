@@ -76,9 +76,16 @@ const analyzeBookFlow = ai.defineFlow(
                 })).output!.result;
 
                 const persona = {id: newPersona.persona, analyzedOn: (new Date()).getTime()}
+                let personas: {id: string, analyzedOn: number}[] = []
+                if (user) {
+                    const oldPersona = user.personas.find((p) => p.id == persona.id)
+                    if (oldPersona) {
+                        personas = personas.filter((p) => p.id != persona.id).concat([persona])
+                    } else personas = user.personas.concat([persona])
+                } else personas = [persona]
                 await updateUser(firestore, input.userId, {
                     progression: newPersona.progression,
-                    personas: user ? user.personas.concat([persona]) : [persona]
+                    personas: personas
                 })
 
                 // ------------------------ Return Results
@@ -91,6 +98,7 @@ const analyzeBookFlow = ai.defineFlow(
                 };
             } else return {error: "Book not found. Try a different title."};
         } catch (e) {
+            console.log(e)
             // not saved, it's ok for now
             return {error: "Oops! Something went wrong. Try again shortly."};
         }

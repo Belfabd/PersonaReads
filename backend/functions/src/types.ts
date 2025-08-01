@@ -13,10 +13,10 @@ export type ItemResult = {
     entity_id: string;
     types: string[];
     popularity: number;
+    tags?: ItemTag[];
     properties: {
         image: { url: string; }
         description: string;
-        tags: ItemTag[];
     }
 }
 

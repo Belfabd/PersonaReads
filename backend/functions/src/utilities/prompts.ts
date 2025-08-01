@@ -1,9 +1,11 @@
 import {Genkit, z} from "genkit";
+import {gemini20Flash} from "@genkit-ai/googleai";
 
 export function enhanceResultsPrompt(ai: Genkit) {
     return ai.definePrompt(
         {
             name: "enhanceResultsPrompt",
+            model: gemini20Flash,
             input: {
                 schema: z.object({
                     book: z.object({
@@ -31,7 +33,7 @@ export function enhanceResultsPrompt(ai: Genkit) {
         `You are a literary expert helping a reader understand why certain books are recommended based on their favorite book.
 
 Given:
-- One book the user likes (with its name and description)
+- One book I like (with its name and description)
 - A list of recommended books (each with name and description)
 
 Your task:
@@ -54,6 +56,7 @@ export function getPersonasPrompt(ai: Genkit) {
     return ai.definePrompt(
         {
             name: "getPersonasPrompt",
+            model: gemini20Flash,
             input: {
                 schema: z.object({
                     book: z.object({
@@ -81,7 +84,7 @@ export function getPersonasPrompt(ai: Genkit) {
         },
         `You are a literary analyst that helps categorize readers into distinct "reading personas" based on their book preferences. 
 
-Below is a predefined list of all personas. Use these as the only valid options when analyzing a user's persona.
+Below is a predefined list of all personas. Use these as the only valid options when analyzing my persona.
 
 ---
 
@@ -181,7 +184,7 @@ Below is a predefined list of all personas. Use these as the only valid options 
 
 ## User History
 
-The user previously had these personas:
+I previously had these personas:
 
 {{#each personas}}
 - id: {{persona}}, analyzed_on: {{date}}
@@ -194,7 +197,7 @@ The user previously had these personas:
 
 ## Latest Book
 
-Here is the book the user just scanned:
+Here is the book I just scanned:
 
 - Title: {{book.name}}
 - Description: {{book.description}}
@@ -204,7 +207,7 @@ Here is the book the user just scanned:
 
 ## Your Tasks
 
-1. **Determine the user’s current persona** by matching the new book's themes, tone, and tags to one of the predefined personas above and return the persona id.  
-2. **Write a short progression summary** showing how the user’s persona has evolved over time based on previous personas and this new one. Highlight any clear shifts in genre, tone, or reading style. If no persona were found, consider only the new book.
+1. **Determine my current persona** by matching the new book's themes, tone, and tags to one of the predefined personas above and return the persona id.  
+2. **Write a short progression summary** in 2 sentences showing how my persona has evolved over time based on previous personas and this new one. Highlight any clear shifts in genre, tone, or reading style. If no persona were found, consider only the new book.
 `);
 }
