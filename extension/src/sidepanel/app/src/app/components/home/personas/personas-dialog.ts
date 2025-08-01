@@ -41,7 +41,7 @@ export class PersonasDialog {
             description: "Description: Craves big ideas and bold futures. Thrives on imaginative worlds and philosophical questions.\n" +
                 "Loves: Science fiction, speculative fiction, dystopias, futurism\n" +
                 "Tone: Thought-provoking, cerebral, grand in scope",
-            image: ""
+            image: "assets/visionary.png"
         },
         {
             id: "escapist",
@@ -49,7 +49,7 @@ export class PersonasDialog {
             description: "Description: Seeks total immersion in other worlds. Reads to forget reality and dive deep into fantasy and adventure.\n" +
                 "Loves: Epic fantasy, high-stakes adventures, magical realism\n" +
                 "Tone: Immersive, dramatic, richly detailed",
-            image: ""
+            image: "assets/escapist.png"
         },
         {
             id: "seeker",
@@ -57,7 +57,7 @@ export class PersonasDialog {
             description: "Description: Drawn to stories of identity, spirituality, and inner growth.\n" +
                 "Loves: Literary fiction, memoirs, magical realism\n" +
                 "Tone: Reflective, poetic, intimate",
-            image: ""
+            image: "assets/seeker.png"
         },
         {
             id: "analyst",
@@ -65,7 +65,7 @@ export class PersonasDialog {
             description: "Description: Loves complex plots, layered characters, and deep analysis. Often reads to solve or understand.\n" +
                 "Loves: Mysteries, historical fiction, political thrillers, essays\n" +
                 "Tone: Intricate, intellectual, suspenseful",
-            image: ""
+            image: "assets/analyst.png"
         },
         {
             id: "romantic",
@@ -73,15 +73,7 @@ export class PersonasDialog {
             description: "Description: Reads for emotion, connection, and the journey of love.\n" +
                 "Loves: Romance (all subgenres), emotional literary fiction\n" +
                 "Tone: Heartfelt, dramatic, warm or bittersweet",
-            image: ""
-        },
-        {
-            id: "seeker",
-            name: "The Seeker",
-            description: "Description: Drawn to stories of identity, spirituality, and inner growth.\n" +
-                "Loves: Literary fiction, memoirs, magical realism\n" +
-                "Tone: Reflective, poetic, intimate",
-            image: ""
+            image: "assets/romantic.png"
         },
         {
             id: "rebel",
@@ -89,7 +81,7 @@ export class PersonasDialog {
             description: "Description: Attracted to stories that challenge norms, subvert expectations, or feature antiheroes.\n" +
                 "Loves: Dystopias, satire, dark fantasy, underground fiction\n" +
                 "Tone: Edgy, raw, provocative",
-            image: ""
+            image: "assets/rebel.png"
         },
         {
             id: "historian",
@@ -97,7 +89,7 @@ export class PersonasDialog {
             description: "Description: Fascinated by the past and how it echoes in the present.\n" +
                 "Loves: Historical fiction, biographies, classics, nonfiction\n" +
                 "Tone: Grounded, rich in detail, nostalgic",
-            image: ""
+            image: "assets/historian.png"
         },
         {
             id: "minimalist",
@@ -105,7 +97,15 @@ export class PersonasDialog {
             description: "Description: Prefers concise prose, clean narratives, and emotional depth in few words.\n" +
                 "Loves: Modern lit, short stories, contemporary fiction\n" +
                 "Tone: Sparse, elegant, introspective",
-            image: ""
+            image: "assets/minimalist.png"
+        },
+        {
+            id: "dreamer",
+            name: "The Dreamer",
+            description: "Description: Loves lyrical writing and whimsical worlds that border on the surreal.\n" +
+                "Loves: Magical realism, fairy tales, folklore, abstract fiction\n" +
+                "Tone: Imaginative, poetic, otherworldly",
+            image: "assets/dreamer.png"
         },
         {
             id: "realist",
@@ -113,7 +113,7 @@ export class PersonasDialog {
             description: "Description: Drawn to grounded stories about real people and everyday life.\n" +
                 "Loves: Contemporary fiction, memoirs, slice-of-life novels\n" +
                 "Tone: Honest, relatable, unembellished",
-            image: ""
+            image: "assets/realist.png"
         },
         {
             id: "thrill_seeker",
@@ -121,7 +121,7 @@ export class PersonasDialog {
             description: "Description: Chases adrenaline through fast-paced narratives, twists, and high stakes.\n" +
                 "Loves: Thrillers, horror, crime, survival stories\n" +
                 "Tone: Tense, gripping, dark",
-            image: ""
+            image: "assets/thrill_seeker.png"
         },
         {
             id: "optimist",
@@ -129,7 +129,7 @@ export class PersonasDialog {
             description: "Description: Seeks hope, humor, and uplift in their stories — even in the darkest moments.\n" +
                 "Loves: Feel-good fiction, coming-of-age, rom-coms\n" +
                 "Tone: Uplifting, heartwarming, humorous",
-            image: ""
+            image: "assets/optimist.png"
         },
         {
             id: "scholar",
@@ -137,7 +137,7 @@ export class PersonasDialog {
             description: "Description: Loves intellectually demanding reads and cross-disciplinary themes.\n" +
                 "Loves: Philosophy, nonfiction, literary classics, deep sci-fi\n" +
                 "Tone: Dense, rich, abstract",
-            image: ""
+            image: "assets/scholar.png"
         },
         {
             id: "curator",
@@ -145,7 +145,7 @@ export class PersonasDialog {
             description: "Description: Reads across genres and styles. Loves aesthetics, discovery, and collecting beautiful or rare books.\n" +
                 "Loves: Niche fiction, experimental writing, cult classics\n" +
                 "Tone: Varied, eclectic, often artistic",
-            image: ""
+            image: "assets/curator.png"
         },
         {
             id: "strategist",
@@ -153,7 +153,7 @@ export class PersonasDialog {
             description: "Description: Engaged by systems, logic, and characters who navigate challenges with skill.\n" +
                 "Loves: Hard sci-fi, political dramas, game theory-based fiction\n" +
                 "Tone: Methodical, layered, ambitious",
-            image: ""
+            image: "assets/strategist.png"
         },
     ]
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PersonaReads",
-  "description": "<ADD DESCRIPTION HERE>",
+  "description": "Personalized book recommendations based on your reading persona, tone, and themes — not just algorithms.",
   "version": "1.0.0",
   "permissions": [
     "activeTab",
